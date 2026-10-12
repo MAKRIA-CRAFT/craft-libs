@@ -4,7 +4,7 @@ The best first extraction is the embedded SVG icon catalog used by PhotoCraft, V
 
 The broader opportunity is a collection of reusable UI components. All twelve Rust Craft apps use egui 0.36, but their themes, document models, numeric fields and docking behavior have evolved differently. Shared components should accept small style values and return interactions; each app should continue to choose its layout, command, localization and document semantics.
 
-This covers item 3 of [craft-libs issue 2](https://github.com/storytold/craft-libs/issues/2). The [earlier four-app comparison](https://github.com/storytold/vectorcraft/issues/647) is useful background, but the findings below come from the pinned source revisions listed at the end. This is a source audit, not a claim that every application has passed interactive or cross-platform acceptance.
+This covers item 3 of [craft-libs issue 2](https://github.com/MAKRIA-CRAFT/craft-libs/issues/2). The [earlier four-app comparison](https://github.com/MAKRIA-CRAFT/vectorcraft/issues/647) is useful background, but the findings below come from the pinned source revisions listed at the end. This is a source audit, not a claim that every application has passed interactive or cross-platform acceptance.
 
 ## Scope and current libraries
 
@@ -172,69 +172,69 @@ Snapshot date: 2026-10-09. The source-audit links throughout this report resolve
 
 | Repository | Revision |
 | --- | --- |
-| `storytold/cadcraft` | [`86f3199b400c`](https://github.com/storytold/cadcraft/tree/86f3199b400c271a1166103519b3785e4ac88e72) |
-| `storytold/deckcraft` | [`4b09f35c1d6f`](https://github.com/storytold/deckcraft/tree/4b09f35c1d6fa50e2d94243a5d65d98fe49558e0) |
-| `storytold/designcraft` | [`66c7ce7e96ec`](https://github.com/storytold/designcraft/tree/66c7ce7e96ec286a091878cc2541ee8369aa79d6) |
-| `storytold/effectcraft` | [`2a460986ee7a`](https://github.com/storytold/effectcraft/tree/2a460986ee7a4b32656a3d434849693904b486bc) |
-| `storytold/filmcraft` | [`7b6c13447228`](https://github.com/storytold/filmcraft/tree/7b6c134472287db4367fca80bcb498240ba36567) |
-| `storytold/gridcraft` | [`51b531be3e8b`](https://github.com/storytold/gridcraft/tree/51b531be3e8b3f5a19d2b7714a4780a79569ca92) |
-| `storytold/lightcraft` | [`88ea1a804b35`](https://github.com/storytold/lightcraft/tree/88ea1a804b35709e1fe436e3792adf0428b97daa) |
-| `storytold/pdfcraft` | [`f626db25cca2`](https://github.com/storytold/pdfcraft/tree/f626db25cca2c89f8fa3f7e30d22bf59faea65ec) |
-| `storytold/photocraft` | [`e7a83ca342cd`](https://github.com/storytold/photocraft/tree/e7a83ca342cdff568254f85f442b9cc8afb08066) |
-| `storytold/soundcraft` | [`eac0edd896cd`](https://github.com/storytold/soundcraft/tree/eac0edd896cd6bdf27c0cdd0f9f9158c8956248a) |
-| `storytold/vectorcraft` | [`825d4fdb8b52`](https://github.com/storytold/vectorcraft/tree/825d4fdb8b527c597855d273fb4bcc1971855b6a) |
-| `storytold/wordcraft` | [`d7d9702bda1f`](https://github.com/storytold/wordcraft/tree/d7d9702bda1fe626952024dc37fd2624323dad0f) |
+| `MAKRIA-CRAFT/cadcraft` | [`86f3199b400c`](https://github.com/MAKRIA-CRAFT/cadcraft/tree/86f3199b400c271a1166103519b3785e4ac88e72) |
+| `MAKRIA-CRAFT/deckcraft` | [`4b09f35c1d6f`](https://github.com/MAKRIA-CRAFT/deckcraft/tree/4b09f35c1d6fa50e2d94243a5d65d98fe49558e0) |
+| `MAKRIA-CRAFT/designcraft` | [`66c7ce7e96ec`](https://github.com/MAKRIA-CRAFT/designcraft/tree/66c7ce7e96ec286a091878cc2541ee8369aa79d6) |
+| `MAKRIA-CRAFT/effectcraft` | [`2a460986ee7a`](https://github.com/MAKRIA-CRAFT/effectcraft/tree/2a460986ee7a4b32656a3d434849693904b486bc) |
+| `MAKRIA-CRAFT/filmcraft` | [`7b6c13447228`](https://github.com/MAKRIA-CRAFT/filmcraft/tree/7b6c134472287db4367fca80bcb498240ba36567) |
+| `MAKRIA-CRAFT/gridcraft` | [`51b531be3e8b`](https://github.com/MAKRIA-CRAFT/gridcraft/tree/51b531be3e8b3f5a19d2b7714a4780a79569ca92) |
+| `MAKRIA-CRAFT/lightcraft` | [`88ea1a804b35`](https://github.com/MAKRIA-CRAFT/lightcraft/tree/88ea1a804b35709e1fe436e3792adf0428b97daa) |
+| `MAKRIA-CRAFT/pdfcraft` | [`f626db25cca2`](https://github.com/MAKRIA-CRAFT/pdfcraft/tree/f626db25cca2c89f8fa3f7e30d22bf59faea65ec) |
+| `MAKRIA-CRAFT/photocraft` | [`e7a83ca342cd`](https://github.com/MAKRIA-CRAFT/photocraft/tree/e7a83ca342cdff568254f85f442b9cc8afb08066) |
+| `MAKRIA-CRAFT/soundcraft` | [`eac0edd896cd`](https://github.com/MAKRIA-CRAFT/soundcraft/tree/eac0edd896cd6bdf27c0cdd0f9f9158c8956248a) |
+| `MAKRIA-CRAFT/vectorcraft` | [`825d4fdb8b52`](https://github.com/MAKRIA-CRAFT/vectorcraft/tree/825d4fdb8b527c597855d273fb4bcc1971855b6a) |
+| `MAKRIA-CRAFT/wordcraft` | [`d7d9702bda1f`](https://github.com/MAKRIA-CRAFT/wordcraft/tree/d7d9702bda1fe626952024dc37fd2624323dad0f) |
 
-[pc-theme]: https://github.com/storytold/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/theme.rs
-[pc-widgets]: https://github.com/storytold/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/widgets.rs
-[pc-icons]: https://github.com/storytold/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/icons.rs
-[pc-dock]: https://github.com/storytold/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/dock.rs
-[pc-rulers]: https://github.com/storytold/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/rulers.rs
-[pc-picker]: https://github.com/storytold/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/color_picker_ui.rs
-[pc-menu-nav]: https://github.com/storytold/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/menu_nav.rs
-[pc-menu-tests]: https://github.com/storytold/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/menu_nav_tests.rs
-[pc-dock-tests]: https://github.com/storytold/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/dock_tests.rs
-[pc-dialogs]: https://github.com/storytold/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/dialogs.rs
-[vc-theme]: https://github.com/storytold/vectorcraft/blob/825d4fdb8b527c597855d273fb4bcc1971855b6a/crates/ui-egui/src/theme.rs
-[vc-widgets]: https://github.com/storytold/vectorcraft/blob/825d4fdb8b527c597855d273fb4bcc1971855b6a/crates/ui-egui/src/widgets.rs
-[vc-icons]: https://github.com/storytold/vectorcraft/blob/825d4fdb8b527c597855d273fb4bcc1971855b6a/crates/ui-egui/src/icons.rs
-[vc-dock]: https://github.com/storytold/vectorcraft/blob/825d4fdb8b527c597855d273fb4bcc1971855b6a/crates/ui-egui/src/dock.rs
-[vc-canvas]: https://github.com/storytold/vectorcraft/blob/825d4fdb8b527c597855d273fb4bcc1971855b6a/crates/ui-egui/src/canvas.rs
-[vc-picker]: https://github.com/storytold/vectorcraft/blob/825d4fdb8b527c597855d273fb4bcc1971855b6a/crates/ui-egui/src/dialogs/color_picker.rs
-[vc-menus]: https://github.com/storytold/vectorcraft/blob/825d4fdb8b527c597855d273fb4bcc1971855b6a/crates/ui-egui/src/menus.rs
-[dc-theme]: https://github.com/storytold/designcraft/blob/66c7ce7e96ec286a091878cc2541ee8369aa79d6/crates/ui-egui/src/theme.rs
-[dc-widgets]: https://github.com/storytold/designcraft/blob/66c7ce7e96ec286a091878cc2541ee8369aa79d6/crates/ui-egui/src/widgets.rs
-[dc-icons]: https://github.com/storytold/designcraft/blob/66c7ce7e96ec286a091878cc2541ee8369aa79d6/crates/ui-egui/src/icons.rs
-[dc-dock]: https://github.com/storytold/designcraft/blob/66c7ce7e96ec286a091878cc2541ee8369aa79d6/crates/ui-egui/src/dock.rs
-[dc-canvas]: https://github.com/storytold/designcraft/blob/66c7ce7e96ec286a091878cc2541ee8369aa79d6/crates/ui-egui/src/canvas.rs
-[pdf-theme]: https://github.com/storytold/pdfcraft/blob/f626db25cca2c89f8fa3f7e30d22bf59faea65ec/crates/ui-egui/src/theme.rs
-[pdf-widgets]: https://github.com/storytold/pdfcraft/blob/f626db25cca2c89f8fa3f7e30d22bf59faea65ec/crates/ui-egui/src/widgets.rs
-[pdf-icons]: https://github.com/storytold/pdfcraft/blob/f626db25cca2c89f8fa3f7e30d22bf59faea65ec/crates/ui-egui/src/icons.rs
-[pdf-dialogs]: https://github.com/storytold/pdfcraft/blob/f626db25cca2c89f8fa3f7e30d22bf59faea65ec/crates/ui-egui/src/dialogs.rs
-[lc-theme]: https://github.com/storytold/lightcraft/blob/88ea1a804b35709e1fe436e3792adf0428b97daa/crates/ui-egui/src/theme.rs
-[lc-widgets]: https://github.com/storytold/lightcraft/blob/88ea1a804b35709e1fe436e3792adf0428b97daa/crates/ui-egui/src/widgets.rs
-[lc-menu]: https://github.com/storytold/lightcraft/blob/88ea1a804b35709e1fe436e3792adf0428b97daa/crates/ui-egui/src/menubar.rs
-[lc-menu-level]: https://github.com/storytold/lightcraft/blob/88ea1a804b35709e1fe436e3792adf0428b97daa/crates/ui-egui/src/menu_level.rs
-[fc-theme]: https://github.com/storytold/filmcraft/blob/7b6c134472287db4367fca80bcb498240ba36567/crates/ui-egui/src/theme.rs
-[fc-widgets]: https://github.com/storytold/filmcraft/blob/7b6c134472287db4367fca80bcb498240ba36567/crates/ui-egui/src/widgets.rs
-[fc-dock]: https://github.com/storytold/filmcraft/blob/7b6c134472287db4367fca80bcb498240ba36567/crates/ui-egui/src/dock.rs
-[ec-theme]: https://github.com/storytold/effectcraft/blob/2a460986ee7a4b32656a3d434849693904b486bc/crates/ui-egui/src/theme.rs
-[ec-widgets]: https://github.com/storytold/effectcraft/blob/2a460986ee7a4b32656a3d434849693904b486bc/crates/ui-egui/src/widgets.rs
-[ec-dock]: https://github.com/storytold/effectcraft/blob/2a460986ee7a4b32656a3d434849693904b486bc/crates/ui-egui/src/dock.rs
-[wc-theme]: https://github.com/storytold/wordcraft/blob/d7d9702bda1fe626952024dc37fd2624323dad0f/crates/ui-egui/src/theme.rs
-[wc-widgets]: https://github.com/storytold/wordcraft/blob/d7d9702bda1fe626952024dc37fd2624323dad0f/crates/ui-egui/src/widgets.rs
-[wc-canvas]: https://github.com/storytold/wordcraft/blob/d7d9702bda1fe626952024dc37fd2624323dad0f/crates/ui-egui/src/canvas.rs
-[gc-theme]: https://github.com/storytold/gridcraft/blob/51b531be3e8b3f5a19d2b7714a4780a79569ca92/crates/ui-egui/src/theme.rs
-[gc-widgets]: https://github.com/storytold/gridcraft/blob/51b531be3e8b3f5a19d2b7714a4780a79569ca92/crates/ui-egui/src/widgets.rs
-[gc-dialogs]: https://github.com/storytold/gridcraft/blob/51b531be3e8b3f5a19d2b7714a4780a79569ca92/crates/ui-egui/src/dialogs.rs
-[deck-theme]: https://github.com/storytold/deckcraft/blob/4b09f35c1d6fa50e2d94243a5d65d98fe49558e0/crates/ui-egui/src/theme.rs
-[deck-widgets]: https://github.com/storytold/deckcraft/blob/4b09f35c1d6fa50e2d94243a5d65d98fe49558e0/crates/ui-egui/src/widgets.rs
-[deck-canvas]: https://github.com/storytold/deckcraft/blob/4b09f35c1d6fa50e2d94243a5d65d98fe49558e0/crates/ui-egui/src/canvas.rs
-[cad-theme]: https://github.com/storytold/cadcraft/blob/86f3199b400c271a1166103519b3785e4ac88e72/crates/ui-egui/src/theme.rs
-[cad-chrome]: https://github.com/storytold/cadcraft/blob/86f3199b400c271a1166103519b3785e4ac88e72/crates/ui-egui/src/chrome.rs
-[cad-palettes]: https://github.com/storytold/cadcraft/blob/86f3199b400c271a1166103519b3785e4ac88e72/crates/ui-egui/src/palettes.rs
-[cad-dialogs]: https://github.com/storytold/cadcraft/blob/86f3199b400c271a1166103519b3785e4ac88e72/crates/ui-egui/src/dialogs.rs
-[sc-theme]: https://github.com/storytold/soundcraft/blob/eac0edd896cd6bdf27c0cdd0f9f9158c8956248a/crates/ui-egui/src/theme.rs
-[sc-widgets]: https://github.com/storytold/soundcraft/blob/eac0edd896cd6bdf27c0cdd0f9f9158c8956248a/crates/ui-egui/src/widgets.rs
-[sc-toolbar]: https://github.com/storytold/soundcraft/blob/eac0edd896cd6bdf27c0cdd0f9f9158c8956248a/crates/ui-egui/src/toolbar.rs
-[sc-edit]: https://github.com/storytold/soundcraft/blob/eac0edd896cd6bdf27c0cdd0f9f9158c8956248a/crates/ui-egui/src/edit_window.rs
+[pc-theme]: https://github.com/MAKRIA-CRAFT/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/theme.rs
+[pc-widgets]: https://github.com/MAKRIA-CRAFT/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/widgets.rs
+[pc-icons]: https://github.com/MAKRIA-CRAFT/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/icons.rs
+[pc-dock]: https://github.com/MAKRIA-CRAFT/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/dock.rs
+[pc-rulers]: https://github.com/MAKRIA-CRAFT/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/rulers.rs
+[pc-picker]: https://github.com/MAKRIA-CRAFT/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/color_picker_ui.rs
+[pc-menu-nav]: https://github.com/MAKRIA-CRAFT/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/menu_nav.rs
+[pc-menu-tests]: https://github.com/MAKRIA-CRAFT/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/menu_nav_tests.rs
+[pc-dock-tests]: https://github.com/MAKRIA-CRAFT/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/dock_tests.rs
+[pc-dialogs]: https://github.com/MAKRIA-CRAFT/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/dialogs.rs
+[vc-theme]: https://github.com/MAKRIA-CRAFT/vectorcraft/blob/825d4fdb8b527c597855d273fb4bcc1971855b6a/crates/ui-egui/src/theme.rs
+[vc-widgets]: https://github.com/MAKRIA-CRAFT/vectorcraft/blob/825d4fdb8b527c597855d273fb4bcc1971855b6a/crates/ui-egui/src/widgets.rs
+[vc-icons]: https://github.com/MAKRIA-CRAFT/vectorcraft/blob/825d4fdb8b527c597855d273fb4bcc1971855b6a/crates/ui-egui/src/icons.rs
+[vc-dock]: https://github.com/MAKRIA-CRAFT/vectorcraft/blob/825d4fdb8b527c597855d273fb4bcc1971855b6a/crates/ui-egui/src/dock.rs
+[vc-canvas]: https://github.com/MAKRIA-CRAFT/vectorcraft/blob/825d4fdb8b527c597855d273fb4bcc1971855b6a/crates/ui-egui/src/canvas.rs
+[vc-picker]: https://github.com/MAKRIA-CRAFT/vectorcraft/blob/825d4fdb8b527c597855d273fb4bcc1971855b6a/crates/ui-egui/src/dialogs/color_picker.rs
+[vc-menus]: https://github.com/MAKRIA-CRAFT/vectorcraft/blob/825d4fdb8b527c597855d273fb4bcc1971855b6a/crates/ui-egui/src/menus.rs
+[dc-theme]: https://github.com/MAKRIA-CRAFT/designcraft/blob/66c7ce7e96ec286a091878cc2541ee8369aa79d6/crates/ui-egui/src/theme.rs
+[dc-widgets]: https://github.com/MAKRIA-CRAFT/designcraft/blob/66c7ce7e96ec286a091878cc2541ee8369aa79d6/crates/ui-egui/src/widgets.rs
+[dc-icons]: https://github.com/MAKRIA-CRAFT/designcraft/blob/66c7ce7e96ec286a091878cc2541ee8369aa79d6/crates/ui-egui/src/icons.rs
+[dc-dock]: https://github.com/MAKRIA-CRAFT/designcraft/blob/66c7ce7e96ec286a091878cc2541ee8369aa79d6/crates/ui-egui/src/dock.rs
+[dc-canvas]: https://github.com/MAKRIA-CRAFT/designcraft/blob/66c7ce7e96ec286a091878cc2541ee8369aa79d6/crates/ui-egui/src/canvas.rs
+[pdf-theme]: https://github.com/MAKRIA-CRAFT/pdfcraft/blob/f626db25cca2c89f8fa3f7e30d22bf59faea65ec/crates/ui-egui/src/theme.rs
+[pdf-widgets]: https://github.com/MAKRIA-CRAFT/pdfcraft/blob/f626db25cca2c89f8fa3f7e30d22bf59faea65ec/crates/ui-egui/src/widgets.rs
+[pdf-icons]: https://github.com/MAKRIA-CRAFT/pdfcraft/blob/f626db25cca2c89f8fa3f7e30d22bf59faea65ec/crates/ui-egui/src/icons.rs
+[pdf-dialogs]: https://github.com/MAKRIA-CRAFT/pdfcraft/blob/f626db25cca2c89f8fa3f7e30d22bf59faea65ec/crates/ui-egui/src/dialogs.rs
+[lc-theme]: https://github.com/MAKRIA-CRAFT/lightcraft/blob/88ea1a804b35709e1fe436e3792adf0428b97daa/crates/ui-egui/src/theme.rs
+[lc-widgets]: https://github.com/MAKRIA-CRAFT/lightcraft/blob/88ea1a804b35709e1fe436e3792adf0428b97daa/crates/ui-egui/src/widgets.rs
+[lc-menu]: https://github.com/MAKRIA-CRAFT/lightcraft/blob/88ea1a804b35709e1fe436e3792adf0428b97daa/crates/ui-egui/src/menubar.rs
+[lc-menu-level]: https://github.com/MAKRIA-CRAFT/lightcraft/blob/88ea1a804b35709e1fe436e3792adf0428b97daa/crates/ui-egui/src/menu_level.rs
+[fc-theme]: https://github.com/MAKRIA-CRAFT/filmcraft/blob/7b6c134472287db4367fca80bcb498240ba36567/crates/ui-egui/src/theme.rs
+[fc-widgets]: https://github.com/MAKRIA-CRAFT/filmcraft/blob/7b6c134472287db4367fca80bcb498240ba36567/crates/ui-egui/src/widgets.rs
+[fc-dock]: https://github.com/MAKRIA-CRAFT/filmcraft/blob/7b6c134472287db4367fca80bcb498240ba36567/crates/ui-egui/src/dock.rs
+[ec-theme]: https://github.com/MAKRIA-CRAFT/effectcraft/blob/2a460986ee7a4b32656a3d434849693904b486bc/crates/ui-egui/src/theme.rs
+[ec-widgets]: https://github.com/MAKRIA-CRAFT/effectcraft/blob/2a460986ee7a4b32656a3d434849693904b486bc/crates/ui-egui/src/widgets.rs
+[ec-dock]: https://github.com/MAKRIA-CRAFT/effectcraft/blob/2a460986ee7a4b32656a3d434849693904b486bc/crates/ui-egui/src/dock.rs
+[wc-theme]: https://github.com/MAKRIA-CRAFT/wordcraft/blob/d7d9702bda1fe626952024dc37fd2624323dad0f/crates/ui-egui/src/theme.rs
+[wc-widgets]: https://github.com/MAKRIA-CRAFT/wordcraft/blob/d7d9702bda1fe626952024dc37fd2624323dad0f/crates/ui-egui/src/widgets.rs
+[wc-canvas]: https://github.com/MAKRIA-CRAFT/wordcraft/blob/d7d9702bda1fe626952024dc37fd2624323dad0f/crates/ui-egui/src/canvas.rs
+[gc-theme]: https://github.com/MAKRIA-CRAFT/gridcraft/blob/51b531be3e8b3f5a19d2b7714a4780a79569ca92/crates/ui-egui/src/theme.rs
+[gc-widgets]: https://github.com/MAKRIA-CRAFT/gridcraft/blob/51b531be3e8b3f5a19d2b7714a4780a79569ca92/crates/ui-egui/src/widgets.rs
+[gc-dialogs]: https://github.com/MAKRIA-CRAFT/gridcraft/blob/51b531be3e8b3f5a19d2b7714a4780a79569ca92/crates/ui-egui/src/dialogs.rs
+[deck-theme]: https://github.com/MAKRIA-CRAFT/deckcraft/blob/4b09f35c1d6fa50e2d94243a5d65d98fe49558e0/crates/ui-egui/src/theme.rs
+[deck-widgets]: https://github.com/MAKRIA-CRAFT/deckcraft/blob/4b09f35c1d6fa50e2d94243a5d65d98fe49558e0/crates/ui-egui/src/widgets.rs
+[deck-canvas]: https://github.com/MAKRIA-CRAFT/deckcraft/blob/4b09f35c1d6fa50e2d94243a5d65d98fe49558e0/crates/ui-egui/src/canvas.rs
+[cad-theme]: https://github.com/MAKRIA-CRAFT/cadcraft/blob/86f3199b400c271a1166103519b3785e4ac88e72/crates/ui-egui/src/theme.rs
+[cad-chrome]: https://github.com/MAKRIA-CRAFT/cadcraft/blob/86f3199b400c271a1166103519b3785e4ac88e72/crates/ui-egui/src/chrome.rs
+[cad-palettes]: https://github.com/MAKRIA-CRAFT/cadcraft/blob/86f3199b400c271a1166103519b3785e4ac88e72/crates/ui-egui/src/palettes.rs
+[cad-dialogs]: https://github.com/MAKRIA-CRAFT/cadcraft/blob/86f3199b400c271a1166103519b3785e4ac88e72/crates/ui-egui/src/dialogs.rs
+[sc-theme]: https://github.com/MAKRIA-CRAFT/soundcraft/blob/eac0edd896cd6bdf27c0cdd0f9f9158c8956248a/crates/ui-egui/src/theme.rs
+[sc-widgets]: https://github.com/MAKRIA-CRAFT/soundcraft/blob/eac0edd896cd6bdf27c0cdd0f9f9158c8956248a/crates/ui-egui/src/widgets.rs
+[sc-toolbar]: https://github.com/MAKRIA-CRAFT/soundcraft/blob/eac0edd896cd6bdf27c0cdd0f9f9158c8956248a/crates/ui-egui/src/toolbar.rs
+[sc-edit]: https://github.com/MAKRIA-CRAFT/soundcraft/blob/eac0edd896cd6bdf27c0cdd0f9f9158c8956248a/crates/ui-egui/src/edit_window.rs

@@ -1,7 +1,7 @@
 # AGENTS.md
 
 Shared Rust libraries for the Craft Apps. The shared standards live in
-[craftrules](https://github.com/storytold/craftrules) (`../../craftrules` on a dev machine): read its
+[craftrules](https://github.com/MAKRIA-CRAFT/craftrules) (`../../craftrules` on a dev machine): read its
 `AGENTS.md`, then `standards/never-crash.md`, `standards/engineering.md` and `standards/licensing.md`.
 
 - **Never crash.** Every crate's `lib.rs` starts with

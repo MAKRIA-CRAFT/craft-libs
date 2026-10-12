@@ -5,9 +5,9 @@ widget states, with a supplied foreground stroke and corner radius. VectorCraft,
 LightCraft use the same operation. Their complete palettes, theme choices, fonts and preferences
 remain in their frontends.
 
-This follows the reusable-UI workstream of [craft-libs issue 2](https://github.com/storytold/craft-libs/issues/2).
-The [cross-app architecture discussion](https://github.com/storytold/vectorcraft/issues/647) and
-[base-crate request](https://github.com/storytold/photocraft/issues/1217) provide context; this change
+This follows the reusable-UI workstream of [craft-libs issue 2](https://github.com/MAKRIA-CRAFT/craft-libs/issues/2).
+The [cross-app architecture discussion](https://github.com/MAKRIA-CRAFT/vectorcraft/issues/647) and
+[base-crate request](https://github.com/MAKRIA-CRAFT/photocraft/issues/1217) provide context; this change
 keeps the existing repository, document and release boundaries.
 
 ## Source comparison
@@ -18,14 +18,14 @@ tests; it is not a count of duplicate theme code. Token-field counts include non
 
 | App | Source revision | Lines | Token fields | Theme model |
 | --- | --- | ---: | ---: | --- |
-| PhotoCraft | [`e7a83ca342cd`](https://github.com/storytold/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/theme.rs) | 832 | 37 | Five presets; per-preset metrics and Classic bevels |
-| VectorCraft | [`825d4fdb8b52`](https://github.com/storytold/vectorcraft/blob/825d4fdb8b527c597855d273fb4bcc1971855b6a/crates/ui-egui/src/theme.rs) | 345 | 38 | Four brightness presets |
-| DesignCraft | [`66c7ce7e96ec`](https://github.com/storytold/designcraft/blob/66c7ce7e96ec286a091878cc2541ee8369aa79d6/crates/ui-egui/src/theme.rs) | 426 | 33 | Four brightness presets plus High Contrast |
-| WordCraft | [`d7d9702bda1f`](https://github.com/storytold/wordcraft/blob/d7d9702bda1fe626952024dc37fd2624323dad0f/crates/ui-egui/src/theme.rs) | 231 | 32 | Light/dark, ribbon and page colors |
-| PdfCraft | [`f626db25cca2`](https://github.com/storytold/pdfcraft/blob/f626db25cca2c89f8fa3f7e30d22bf59faea65ec/crates/ui-egui/src/theme.rs) | 314 | 22 | System/light/dark preference |
-| LightCraft | [`88ea1a804b35`](https://github.com/storytold/lightcraft/blob/88ea1a804b35709e1fe436e3792adf0428b97daa/crates/ui-egui/src/theme.rs) | 345 | 35 | Dark photo workflow palette |
-| FilmCraft | [`7b6c13447228`](https://github.com/storytold/filmcraft/blob/7b6c134472287db4367fca80bcb498240ba36567/crates/ui-egui/src/theme.rs) | 447 | 43 | Three presets, custom accent and accessible contrast |
-| EffectCraft | [`2a460986ee7a`](https://github.com/storytold/effectcraft/blob/2a460986ee7a4b32656a3d434849693904b486bc/crates/ui-egui/src/theme.rs) | 514 | 44 | Three presets, brightness and label colors |
+| PhotoCraft | [`e7a83ca342cd`](https://github.com/MAKRIA-CRAFT/photocraft/blob/e7a83ca342cdff568254f85f442b9cc8afb08066/crates/ui-egui/src/theme.rs) | 832 | 37 | Five presets; per-preset metrics and Classic bevels |
+| VectorCraft | [`825d4fdb8b52`](https://github.com/MAKRIA-CRAFT/vectorcraft/blob/825d4fdb8b527c597855d273fb4bcc1971855b6a/crates/ui-egui/src/theme.rs) | 345 | 38 | Four brightness presets |
+| DesignCraft | [`66c7ce7e96ec`](https://github.com/MAKRIA-CRAFT/designcraft/blob/66c7ce7e96ec286a091878cc2541ee8369aa79d6/crates/ui-egui/src/theme.rs) | 426 | 33 | Four brightness presets plus High Contrast |
+| WordCraft | [`d7d9702bda1f`](https://github.com/MAKRIA-CRAFT/wordcraft/blob/d7d9702bda1fe626952024dc37fd2624323dad0f/crates/ui-egui/src/theme.rs) | 231 | 32 | Light/dark, ribbon and page colors |
+| PdfCraft | [`f626db25cca2`](https://github.com/MAKRIA-CRAFT/pdfcraft/blob/f626db25cca2c89f8fa3f7e30d22bf59faea65ec/crates/ui-egui/src/theme.rs) | 314 | 22 | System/light/dark preference |
+| LightCraft | [`88ea1a804b35`](https://github.com/MAKRIA-CRAFT/lightcraft/blob/88ea1a804b35709e1fe436e3792adf0428b97daa/crates/ui-egui/src/theme.rs) | 345 | 35 | Dark photo workflow palette |
+| FilmCraft | [`7b6c13447228`](https://github.com/MAKRIA-CRAFT/filmcraft/blob/7b6c134472287db4367fca80bcb498240ba36567/crates/ui-egui/src/theme.rs) | 447 | 43 | Three presets, custom accent and accessible contrast |
+| EffectCraft | [`2a460986ee7a`](https://github.com/MAKRIA-CRAFT/effectcraft/blob/2a460986ee7a4b32656a3d434849693904b486bc/crates/ui-egui/src/theme.rs) | 514 | 44 | Three presets, brightness and label colors |
 
 The matching widget-state operation is visible in [VectorCraft lines 299–312][vector-loop],
 [DesignCraft lines 336–348][design-loop] and [LightCraft lines 235–247][light-loop]. It assigns
@@ -157,8 +157,8 @@ shared tabs and buttons now also serve PdfCraft, WordCraft, GridCraft, DeckCraft
 SoundCraft; their full palettes stay local. Further extractions need two real consumers and their
 own visual and interaction checks.
 
-[vector-loop]: https://github.com/storytold/vectorcraft/blob/825d4fdb8b527c597855d273fb4bcc1971855b6a/crates/ui-egui/src/theme.rs#L299-L312
+[vector-loop]: https://github.com/MAKRIA-CRAFT/vectorcraft/blob/825d4fdb8b527c597855d273fb4bcc1971855b6a/crates/ui-egui/src/theme.rs#L299-L312
 
-[design-loop]: https://github.com/storytold/designcraft/blob/66c7ce7e96ec286a091878cc2541ee8369aa79d6/crates/ui-egui/src/theme.rs#L336-L348
+[design-loop]: https://github.com/MAKRIA-CRAFT/designcraft/blob/66c7ce7e96ec286a091878cc2541ee8369aa79d6/crates/ui-egui/src/theme.rs#L336-L348
 
-[light-loop]: https://github.com/storytold/lightcraft/blob/88ea1a804b35709e1fe436e3792adf0428b97daa/crates/ui-egui/src/theme.rs#L235-L247
+[light-loop]: https://github.com/MAKRIA-CRAFT/lightcraft/blob/88ea1a804b35709e1fe436e3792adf0428b97daa/crates/ui-egui/src/theme.rs#L235-L247
