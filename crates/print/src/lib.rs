@@ -9,6 +9,8 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
 #[cfg(any(test, windows))]
+mod progress;
+#[cfg(any(test, windows))]
 mod sheets;
 #[cfg(test)]
 mod tests;
@@ -16,6 +18,13 @@ mod tests;
 mod ticket;
 #[cfg(windows)]
 mod windows;
+
+/// Native Windows driver settings, printable geometry and explicit RGB/GDI transport.
+/// Callers perform ICC conversion and compose page pixels/vector strokes. Other platforms
+/// return `rgb::PrintError::Unsupported`; the PDF spooler remains independent of this API.
+pub mod rgb {
+    pub use craft_winprint_gdi::*;
+}
 
 /// A system spooler failure. Document permissions belong to the caller.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -437,17 +446,30 @@ pub fn parse_windows_printers(out: &str) -> Vec<Printer> {
 /// Send a print-ready PDF to the spooler. Returns the spooler's message: CUPS includes a job id;
 /// Windows confirms submission only ("spooled 3 sheet(s)").
 pub fn submit(pdf: &[u8], job: &Job) -> Result<String, Error> {
+    submit_with_progress(pdf, job, &mut |_, _| {})
+}
+
+/// [`submit`] with Windows sheet-processing progress: `(processed, sheets)` before the first
+/// sheet and after each sheet is successfully added to the native print job. Counts refer to
+/// source PDF sheets, regardless of copies or duplex. CUPS reports no progress.
+///
+/// The callback runs synchronously on the thread calling this function, need not be `Send`,
+/// and should return promptly. It is never retained. All sheets processed is not terminal
+/// success: only the returned result confirms submission, and a later failure may follow the
+/// last progress event. This does not report physical printing or provide cancellation.
+pub fn submit_with_progress(pdf: &[u8], job: &Job, progress: &mut dyn FnMut(usize, usize)) -> Result<String, Error> {
     #[cfg(all(unix, not(target_arch = "wasm32")))]
     {
+        let _ = progress;
         submit_via(std::process::Command::new("lp"), pdf, job)
     }
     #[cfg(windows)]
     {
-        windows::submit(pdf, job)
+        windows::submit_with_progress(pdf, job, progress)
     }
     #[cfg(not(any(windows, all(unix, not(target_arch = "wasm32")))))]
     {
-        let _ = (pdf, job);
+        let _ = (pdf, job, progress);
         Err(Error::Spool("printing to a printer isn't available on this platform yet; save the print-ready PDF instead".into()))
     }
 }

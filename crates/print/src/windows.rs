@@ -12,7 +12,7 @@
 
 use std::io::Write as _;
 
-use winprint::printer::{FilePrinter as _, PrinterDevice, WinPdfPrinter};
+use winprint::printer::{PrinterDevice, WinPdfPrinter};
 use winprint::ticket::document::{NS_PSK, OwnedName, PrintFeature, PrintTicketDocument, reader::ParsableXmlDocument as _};
 use winprint::ticket::{FeatureOptionPack as _, PageMediaSize, PrintCapabilities, PrintTicket, PrintTicketBuilder};
 
@@ -38,7 +38,7 @@ pub(crate) fn printers() -> Vec<Printer> {
 
 /// Whether the printer's driver takes two-sided settings: its PrintCapabilities offer a two-sided
 /// option for the feature the job's ticket sets. `None` when the capabilities can't be read. A
-/// driver without one drops two-sided from the ticket and prints its own way.
+/// driver without one cannot confirm an explicit two-sided request, which is refused before submission.
 fn two_sided(device: &PrinterDevice) -> Option<bool> {
     let capabilities = PrintCapabilities::fetch(device).ok()?;
     let duplex = OwnedName::qualified("JobDuplexAllDocumentsContiguously", NS_PSK, Some("psk"));
@@ -124,8 +124,9 @@ fn imageable_margin(device: &PrinterDevice, ticket: &PrintTicket) -> f64 {
 /// temporary folder (an unpredictable name, only this user's) for as long as the spooler takes
 /// it, and the folder is removed however the job ended. Windows answers once the job is in the
 /// queue: a paused queue or an offline printer keeps the job there, as with any program.
-pub(crate) fn submit(pdf: &[u8], job: &Job) -> Result<String, Error> {
+pub(crate) fn submit_with_progress(pdf: &[u8], job: &Job, progress: &mut dyn FnMut(usize, usize)) -> Result<String, Error> {
     let read = sheets::read(pdf)?;
+    read.check_print_annotations()?;
     let count = read.sheets.len();
     let first = read.sheets.first().map(sheets::Sheet::size).ok_or_else(|| spool_error("the print-ready PDF has no pages"))?;
     let landscape = first.0 > first.1 + SAME;
@@ -139,37 +140,38 @@ pub(crate) fn submit(pdf: &[u8], job: &Job) -> Result<String, Error> {
     let dir = tempfile::Builder::new().prefix("craft-print-").tempdir().map_err(written)?;
     let path = dir.path().join(ticket::job_filename(&job.title));
     let read = &read;
-    // Joined before `dir` is dropped: the spooler reads the file.
-    let result = std::thread::scope(|s| {
-        std::thread::Builder::new()
-            .name("print job".into())
-            .spawn_scoped(s, move || {
-                let (ticket, paper) = driver_ticket(&device, job, first, landscape)?;
-                let (fit, paper) = match job.scaling {
-                    Scaling::Exact => (Fit::Exact, first),
-                    Scaling::ShrinkToFit => {
-                        let (short, long) = (ticket::points(paper.0.min(paper.1)), ticket::points(paper.0.max(paper.1)));
-                        (Fit::Shrink { margin: imageable_margin(&device, &ticket) }, if landscape { (long, short) } else { (short, long) })
-                    }
-                };
-                let edits = sheets::plan(&read.sheets, paper, fit)?;
-                let updated = if edits.is_empty() { None } else { Some(read.update(&edits)?) };
-                let mut file = std::fs::OpenOptions::new().write(true).create_new(true).open(&path).map_err(written)?;
-                file.write_all(updated.as_deref().unwrap_or(pdf)).map_err(written)?;
-                drop(file);
-                WinPdfPrinter::new(device).print(&path, ticket).map_err(|e| {
-                    let mut message = e.to_string();
-                    let mut cause = std::error::Error::source(&e);
-                    while let Some(source) = cause {
-                        message.push_str(&format!(": {source}"));
-                        cause = source.source();
-                    }
-                    spool_error(message)
-                })
+    // The worker is joined before `dir` is dropped: the spooler reads the file.
+    let result = crate::progress::run(progress, move |sender| {
+        let (ticket, paper) = driver_ticket(&device, job, first, landscape)?;
+        let xml = std::str::from_utf8(ticket.get_xml()).map_err(spool_error)?;
+        ticket::verify_job_options(xml, job, count)?;
+        let (fit, paper) = match job.scaling {
+            Scaling::Exact => (Fit::Exact, first),
+            Scaling::ShrinkToFit => {
+                let (short, long) = (ticket::points(paper.0.min(paper.1)), ticket::points(paper.0.max(paper.1)));
+                (Fit::Shrink { margin: imageable_margin(&device, &ticket) }, if landscape { (long, short) } else { (short, long) })
+            }
+        };
+        let edits = sheets::plan(&read.sheets, paper, fit)?;
+        let updated = if edits.is_empty() { None } else { Some(read.update(&edits)?) };
+        let mut file = std::fs::OpenOptions::new().write(true).create_new(true).open(&path).map_err(written)?;
+        file.write_all(updated.as_deref().unwrap_or(pdf)).map_err(written)?;
+        drop(file);
+        WinPdfPrinter::new(device)
+            .print_with_progress(&path, ticket, |processed, total| {
+                // Page acceptance is distinct from terminal job success. The callback
+                // drains on the submitter's thread, so it can retain non-Send UI state.
+                let _ = sender.send((processed as usize, total as usize));
             })
-            .map_err(|e| spool_error(format!("the print job could not be started: {e}")))?
-            .join()
-            .map_err(|_| spool_error("the print job stopped unexpectedly; check the printer's queue before printing again"))?
+            .map_err(|e| {
+                let mut message = e.to_string();
+                let mut cause = std::error::Error::source(&e);
+                while let Some(source) = cause {
+                    message.push_str(&format!(": {source}"));
+                    cause = source.source();
+                }
+                spool_error(message)
+            })
     });
     drop(dir);
     result?;
@@ -186,20 +188,38 @@ mod tests {
         assert!(select_device(Vec::new(), None, None).is_err());
     }
 
-    /// What a real driver makes of a job's ticket: Letter, portrait, two copies, two-sided on
-    /// the long edge, grayscale. Sends no job. `CRAFT_PRINT_TEST_PRINTER` names the queue;
+    /// What a real driver makes of a job's ticket: Letter, portrait, two copies. Checks explicit
+    /// option retention separately; unsupported options must fail before submission. Sends no job.
+    /// `CRAFT_PRINT_TEST_PRINTER` names the queue;
     /// `CRAFT_PRINT_TEST_TICKET_OUTPUT` keeps the validated ticket, to see which options it kept.
     #[test]
     #[ignore = "needs CRAFT_PRINT_TEST_PRINTER naming an installed printer; sends no job"]
     fn an_installed_driver_validates_the_ticket() {
         let name = std::env::var("CRAFT_PRINT_TEST_PRINTER").unwrap();
         let device = select_device(PrinterDevice::all().unwrap(), Some(&name), None).unwrap();
-        let job = Job { copies: 2, duplex: Some(crate::Duplex::LongEdge), grayscale: true, ..Job::default() };
+        let job = Job { copies: 2, ..Job::default() };
         let (ticket, paper) = driver_ticket(&device, &job, (612.0, 792.0), false).unwrap();
+        ticket::verify_job_options(std::str::from_utf8(ticket.get_xml()).unwrap(), &job, 1).unwrap();
         assert_eq!(paper, (215_900, 279_400));
         eprintln!("unprintable margin: {} pt", imageable_margin(&device, &ticket));
         if let Ok(path) = std::env::var("CRAFT_PRINT_TEST_TICKET_OUTPUT") {
             std::fs::write(path, ticket.get_xml()).unwrap();
+        }
+        let capabilities = PrintCapabilities::fetch(&device).unwrap();
+        for (feature, wanted, requested) in [
+            ("PageOutputColor", "Monochrome", Job { grayscale: true, ..Job::default() }),
+            ("JobDuplexAllDocumentsContiguously", "TwoSidedLongEdge", Job { duplex: Some(crate::Duplex::LongEdge), ..Job::default() }),
+            ("DocumentCollate", "Collated", Job { copies: 2, ..Job::default() }),
+        ] {
+            let (ticket, _) = driver_ticket(&device, &requested, (612.0, 792.0), false).unwrap();
+            let retained = ticket::verify_job_options(std::str::from_utf8(ticket.get_xml()).unwrap(), &requested, 3);
+            eprintln!("{feature}={wanted}: {retained:?}");
+            let offered = capabilities
+                .options_for_feature(OwnedName::qualified(feature, NS_PSK, Some("psk")))
+                .any(|o| o.name.as_ref().is_some_and(|n| n.local_name == wanted || (feature == "PageOutputColor" && n.local_name == "Grayscale")));
+            if !offered {
+                assert!(retained.is_err(), "unsupported explicit option must not be silently dropped");
+            }
         }
     }
 
@@ -218,7 +238,7 @@ mod tests {
             title: "craft-print test".into(),
             ..Job::default()
         };
-        let sent = submit(&pdf, &job);
+        let sent = crate::submit(&pdf, &job);
         eprintln!("{sent:?}");
         assert!(sent.is_ok());
     }
