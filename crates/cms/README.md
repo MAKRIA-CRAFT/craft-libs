@@ -7,7 +7,7 @@ dependency on other craft-libs crates. Implemented from the public ICC.1:2010 (v
 ICC.1:2001-04 (v2) specifications, CIE 15, and Adobe's published black point compensation paper.
 
 Extracted from PhotoCraft's `crates/cms` at
-[`b3222ee`](https://github.com/storytold/photocraft/tree/b3222ee8e7e6bcb4799c37f904c595f20f9baf5e/crates/cms)
+[`b3222ee`](https://github.com/MAKRIA-CRAFT/photocraft/tree/b3222ee8e7e6bcb4799c37f904c595f20f9baf5e/crates/cms)
 (refs #36).
 
 ## API
